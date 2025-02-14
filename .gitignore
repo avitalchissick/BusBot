@@ -169,3 +169,15 @@ cython_debug/
 
 # PyPI configuration file
 .pypirc
+BusBot.env
+Data/agency.txt
+Data/calendar.txt
+Data/fare_attributes.txt
+Data/fare_rules.txt
+Data/israel-public-transportation.zip
+Data/routes.txt
+Data/shapes.txt
+Data/stop_times.txt
+Data/stops.txt
+Data/translations.txt
+Data/trips.txt
