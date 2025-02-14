@@ -2,6 +2,7 @@ import BusData
 import datetime
 import Trip
 import Route
+import DisplayLine
 
 class BusMain:
     def __init__(self):
@@ -42,5 +43,5 @@ class BusMain:
                     if route == None:
                         print(f'route {trip.route_id} not found')
                     else:
-                        lines.add((route.short_name,stop_time.arrival_time))
+                        lines.add(DisplayLine.DisplayLine(route.id,route.short_name,route.long_name,trip.direction_id,stop_time.arrival_time))
         return lines
