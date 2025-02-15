@@ -5,6 +5,7 @@ class DisplayLine:
         self.route_long_name = route_long_name
         self.direction = direction
         self.arrival_time = arrival_time
+        self.route_from,self.route_to = route_long_name.split('<->')
 
     def __eq__(self, other):
         return self.route_id == other.route_id and \
@@ -14,7 +15,5 @@ class DisplayLine:
                 self.arrival_time == other.arrival_time 
     
     def __str__(self):
-        return f"{self.route_short_name} - {self.arrival_time}"
+        return f"{self.arrival_time} - {self.route_short_name} - {self.route_to}"
     
-    def __hash__(self):
-        return hash(self.route_id) + hash(self.route_short_name) + hash(self.route_long_name) + hash(self.direction) + hash(self.arrival_time)

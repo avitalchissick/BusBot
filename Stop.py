@@ -15,4 +15,7 @@ class Stop:
         self.location_type = location_type
 
     def __str__(self):
-        return f"{self.code} - {self.name} - {self.desc}"
+        return f"{self.code} - {self.name} - {self.__clean_desc(self.desc)}"
+    
+    def __clean_desc(self,desc: str):
+        return desc.replace('רציף:  קומה:','')

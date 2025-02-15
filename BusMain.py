@@ -50,4 +50,6 @@ class BusMain:
                         calendar: Calendar.Calendar = next((x for x in self.calendars if x.service_id == trip.service_id),None)
                         if calendar.is_running(datetime.datetime.now()):
                             lines.append(DisplayLine.DisplayLine(route.id,route.short_name,route.long_name,trip.direction_id,stop_time.arrival_time))
+
+        lines.sort(key=lambda displayLine: displayLine.arrival_time)
         return lines
