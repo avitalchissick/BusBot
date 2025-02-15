@@ -7,6 +7,7 @@ import Stop
 import Route
 import StopTimes
 import Trip
+import Calendar
 
 def getBusDataFilesFromServer():
     data_url = "https://gtfs.mot.gov.il/gtfsfiles"
@@ -68,3 +69,12 @@ def getTrips():
         for row in reader:
             trips.append(Trip.Trip(row[0], row[1], row[2],row[3],row[4]))
     return trips
+
+def getCalendars():
+    calendars = []
+    with open('Data/calendar.txt', 'r',encoding='utf-8') as f:
+        reader = csv.reader(f)
+        next(f) #skipping the header line
+        for row in reader:
+            calendars.append(Calendar.Calendar(row[0], row[1], row[2],row[3],row[4],row[5], row[6], row[7],row[8],row[9]))
+    return calendars

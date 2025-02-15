@@ -15,3 +15,6 @@ class DisplayLine:
     
     def __str__(self):
         return f"{self.route_short_name} - {self.arrival_time}"
+    
+    def __hash__(self):
+        return hash(self.route_id) + hash(self.route_short_name) + hash(self.route_long_name) + hash(self.direction) + hash(self.arrival_time)
