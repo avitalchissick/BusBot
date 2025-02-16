@@ -1,5 +1,6 @@
 import BusData
 import datetime
+import Stop
 import Trip
 import Route
 import DisplayLine
@@ -7,12 +8,12 @@ import Calendar
 
 class BusMain:
     def __init__(self):
-        BusData.getBusDataFilesFromServer()
-        self.stops = BusData.getStops()
-        self.stop_times = BusData.getStopTimes()
-        self.trips = BusData.getTrips()
-        self.routes = BusData.getRoutes()
-        self.calendars = BusData.getCalendars()
+        BusData.get_bus_bata_files_from_server()
+        self.stops = BusData.get_stops()
+        self.stop_times = BusData.get_stop_times()
+        self.trips = BusData.get_trips()
+        self.routes = BusData.get_routes()
+        self.calendars = BusData.get_calendars()
 
     def get_stops(self):
         return self.stops
@@ -53,3 +54,22 @@ class BusMain:
 
         lines.sort(key=lambda displayLine: displayLine.arrival_time)
         return lines
+
+    def get_stop_lines_text(self,stop_code):
+        if stop_code.isnumeric():
+            stop: Stop = next((x for x in self.stops if x.code == stop_code),None)
+            if stop == None:
+                return f'stop {stop_code} not found'
+            else:
+                minutes_interval = 60
+                stop_lines: list = self.get_stop_lines(stop.id,minutes_interval)
+                display_text = ""
+                if len(stop_lines) > 0:
+                    for x in stop_lines:
+                        display_text += f"\r\n{str(x)}"
+                else:
+                    display_text = "no data was found"
+                return f'{str(stop)}.\r\nLines that pass at stop in the next {minutes_interval} minutes: {display_text}'
+        else:
+            return 'stop code must be numeric. Try again'
+        

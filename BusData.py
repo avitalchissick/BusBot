@@ -9,7 +9,7 @@ import StopTimes
 import Trip
 import Calendar
 
-def getBusDataFilesFromServer():
+def get_bus_bata_files_from_server():
     data_url = "https://gtfs.mot.gov.il/gtfsfiles"
     main_data_file_name = "israel-public-transportation.zip"
 
@@ -24,7 +24,7 @@ def getBusDataFilesFromServer():
         with zipfile.ZipFile(main_data_file_path, 'r') as zip_ref:
             zip_ref.extractall(local_data_folder)
 
-def getAgencies():
+def get_agencies():
     agencies = []
     with open('Data/agency.txt', 'r',encoding='utf-8') as f:
         reader = csv.reader(f)
@@ -34,7 +34,7 @@ def getAgencies():
 
     return agencies
 
-def getStops():
+def get_stops():
     stops = []
     with open('Data/stops.txt', 'r',encoding='utf-8') as f:
         reader = csv.reader(f)
@@ -43,7 +43,7 @@ def getStops():
             stops.append(Stop.Stop(row[0], row[1], row[2],row[3],row[4],row[5],row[6]))
     return stops
 
-def getRoutes():
+def get_routes():
     routes = []
     with open('Data/routes.txt', 'r',encoding='utf-8') as f:
         reader = csv.reader(f)
@@ -52,7 +52,7 @@ def getRoutes():
             routes.append(Route.Route(row[0], row[1], row[2],row[3],row[4],row[5]))
     return routes
 
-def getStopTimes():
+def get_stop_times():
     stop_times = []
     with open('Data/stop_times.txt', 'r',encoding='utf-8') as f:
         reader = csv.reader(f)
@@ -61,7 +61,7 @@ def getStopTimes():
             stop_times.append(StopTimes.StopTime(row[0], row[1], row[2],row[3],row[4]))
     return stop_times
 
-def getTrips():
+def get_trips():
     trips = []
     with open('Data/trips.txt', 'r',encoding='utf-8') as f:
         reader = csv.reader(f)
@@ -70,7 +70,7 @@ def getTrips():
             trips.append(Trip.Trip(row[0], row[1], row[2],row[3],row[4]))
     return trips
 
-def getCalendars():
+def get_calendars():
     calendars = []
     with open('Data/calendar.txt', 'r',encoding='utf-8') as f:
         reader = csv.reader(f)
