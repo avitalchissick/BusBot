@@ -1,4 +1,4 @@
-class DisplayLine:
+class StopRouteDisplayLine:
     def __init__(self,route_id,route_short_name,route_long_name,direction,arrival_time):
         self.route_id = route_id
         self.route_short_name = route_short_name
@@ -7,13 +7,6 @@ class DisplayLine:
         self.arrival_time = arrival_time
         self.route_from,self.route_to = route_long_name.split('<->')
 
-    def __eq__(self, other):
-        return self.route_id == other.route_id and \
-                self.route_short_name == other.route_short_name and \
-                self.route_long_name == other.route_long_name and \
-                self.direction == other.direction and \
-                self.arrival_time == other.arrival_time 
-    
     def __str__(self):
         return f"{self.arrival_time} - {self.route_short_name} - {self.route_to}"
     
