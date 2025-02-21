@@ -25,6 +25,7 @@ def get_stop_lines(bus_data: BusesData.BusData,stop_id,minutes_interval = 60):
             today = datetime.datetime.now() 
             arrival_time = datetime.datetime(today.year,today.month,today.day,int(hour),int(minute),int(seconds))
         
+        # checking is arrival time is within the given time interval
         if 0 < (arrival_time - datetime.datetime.now()).total_seconds()/60 < minutes_interval:
             trip: Trip = next((x for x in bus_data.trips if x.trip_id == stop_time.trip_id),None)
             if trip == None:

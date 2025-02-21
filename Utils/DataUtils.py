@@ -8,18 +8,27 @@ import Classes.Route as Route
 import Classes.StopTime as StopTime
 import Classes.Trip as Trip
 import Classes.Calendar as Calendar
+import datetime
+
+data_url = "https://gtfs.mot.gov.il/gtfsfiles"
+main_data_file_name = "israel-public-transportation.zip"
+
+def server_has_new_data(main_data_file_path):
+    return (datetime.datetime.now() - datetime.datetime.fromtimestamp(os.path.getmtime(main_data_file_path))).total_seconds()/360 > 24
+# does not work ! - produces SSL error
+#    response = requests.head(f'{data_url}/{main_data_file_name}')
+#    url_last_modified = time.mktime(datetime.datetime.strptime(response.headers.get('Last-Modified')[:-4], "%a, %d %b %Y %H:%M:%S").timetuple()) 
+#    local_last_modified = datetime.datetime.fromtimestamp(os.path.getmtime(main_data_file_path))
+#    return url_last_modified > local_last_modified
 
 def get_bus_bata_files_from_server():
-    data_url = "https://gtfs.mot.gov.il/gtfsfiles"
-    main_data_file_name = "israel-public-transportation.zip"
-
     local_data_folder = f"{os.getcwd()}/Data"
     if not os.path.isdir(local_data_folder):
         os.mkdir(local_data_folder)
 
     main_data_file_path = f"{local_data_folder}/{main_data_file_name}"
 
-    if not os.path.isfile(main_data_file_path):
+    if (not os.path.isfile(main_data_file_path)) or server_has_new_data(main_data_file_path):
         urllib.request.urlretrieve( f"{data_url}/{main_data_file_name}",main_data_file_path)
         with zipfile.ZipFile(main_data_file_path, 'r') as zip_ref:
             zip_ref.extractall(local_data_folder)

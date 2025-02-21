@@ -21,11 +21,6 @@ def send_welcome(message):
     bot.reply_to(message, "Use the command /stop to enter a stop code and see the line that will pass in the stop in the next 60 minutes.")
     bot.reply_to(message, "Use the command /location to enter your location and see close transit stopes.")
 
-# handeling unknown commands
-@bot.message_handler(func=lambda msg: True)
-def echo_all(message):
-    bot.reply_to(message, "Sorry, I don't know how to respond to " + message.text)
-
 # handeling 'stop' command - the user willl enter a station code
 @bot.message_handler(commands=['stop'])
 def send_welcome(message):
@@ -49,5 +44,10 @@ def location_handler(message):
     location= message.location
     display_text = BusUtils.get_adjacent_stops_text(bus_data,location)
     bot.send_message(message.chat.id, display_text, parse_mode="Markdown")
+
+# handeling unknown commands
+@bot.message_handler(func=lambda msg: True)
+def echo_all(message):
+    bot.reply_to(message, "Sorry, I don't know how to respond to " + message.text)
 
 bot.infinity_polling()
