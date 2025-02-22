@@ -10,6 +10,8 @@ bus_data  = BusesData.BusData()
 BOT_TOKEN = os.environ.get('BOT_TOKEN')
 bot = telebot.TeleBot(BOT_TOKEN)
 
+
+
 # handeling 'start', 'hello' commands
 @bot.message_handler(commands=['start', 'hello'])
 def send_welcome(message):

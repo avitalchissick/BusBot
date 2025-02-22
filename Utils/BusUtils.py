@@ -55,10 +55,10 @@ def get_stop_lines_text(bus_data: BusesData.BusData,stop_code):
             for x in stop_lines:
                 display_text += f"\r\n{str(x)}"
         else:
-            display_text = "no data was found"
-        return f'{str(stop)}.\r\nLines that pass at stop in the next {minutes_interval} minutes: {display_text}'
+            display_text = "לא נמצאו נתונים"
+        return f'{str(stop)}.\r\nקווים שעוברים ב  {minutes_interval} דקות הבאות: {display_text}'
     else:
-        return 'stop code must be numeric. Try again'
+        return 'מספר תחנה חייב להיות מספר'
     
 # listing stations close to the given location
 def get_stops_for_location(bus_data: BusesData.BusData,location: telebot.types.Location,meters_interval):
@@ -77,7 +77,7 @@ def get_stops_for_location(bus_data: BusesData.BusData,location: telebot.types.L
 
 def get_adjacent_stops_text(bus_data: BusesData.BusData, location):
     if location == None:
-        return "No location provided"
+        return "לא סופק מיקום"
     meters_interval = 500
     stops: list = get_stops_for_location(bus_data,location,meters_interval)
     display_text = ""
@@ -86,5 +86,5 @@ def get_adjacent_stops_text(bus_data: BusesData.BusData, location):
             display_text += f"\r\n{str(x)}"
     else:
         display_text = "no data was found"
-    return f'Stops at max distance of {meters_interval} meters:{display_text}'
+    return f'תחנות במרחק של עד {meters_interval} מטרים:{display_text}'
 
