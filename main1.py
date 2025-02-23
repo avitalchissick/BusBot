@@ -12,12 +12,16 @@ from telegram.ext import (
 )
 import Classes.BusesData as BusesData
 import Utils.BusUtils as BusUtils
+import time
 
 # Your bot token obtained from BotFather
 TOKEN = os.environ.get('BOT_TOKEN')
 
 # Initializing bus data
+t0 = time.time()
 bus_data  = BusesData.BusData()
+t1 = time.time()
+print (t1-t0)
 
 # Define states for conversation
 MENU, STOP_ASK, LOCATION_ASK = range(3)
@@ -54,11 +58,6 @@ async def button(update: Update, context: CallbackContext) -> int:
     else:
         await query.edit_message_text(text="נבחרה אפשרות לא ידועה")
         return MENU
-
-# Cancel handler
-async def cancel(update: Update, context: CallbackContext) -> int:
-    await update.message.reply_text("פעולה בוטלה")
-    return ConversationHandler.END
 
 async def stop_handler(update: Update, context: CallbackContext) -> int:
     stop_code = update.message.text

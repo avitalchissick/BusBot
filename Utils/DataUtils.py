@@ -9,6 +9,7 @@ import Classes.StopTime as StopTime
 import Classes.Trip as Trip
 import Classes.Calendar as Calendar
 import datetime
+import pandas as pd
 
 data_url = "https://gtfs.mot.gov.il/gtfsfiles"
 main_data_file_name = "israel-public-transportation.zip"

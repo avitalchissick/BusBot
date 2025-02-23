@@ -2,15 +2,17 @@ import os
 import telebot
 import Classes.BusesData as BusesData
 import Utils.BusUtils as BusUtils
+import time
 
 # initializing data
+t0 = time.time()
 bus_data  = BusesData.BusData()
+t1 = time.time()
+print (t1-t0)
 
 # initializing bot
 BOT_TOKEN = os.environ.get('BOT_TOKEN')
 bot = telebot.TeleBot(BOT_TOKEN)
-
-
 
 # handeling 'start', 'hello' commands
 @bot.message_handler(commands=['start', 'hello'])
