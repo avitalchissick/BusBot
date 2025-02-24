@@ -21,7 +21,7 @@ TOKEN = os.environ.get('BOT_TOKEN')
 t0 = time.time()
 bus_data  = BusesData.BusData()
 t1 = time.time()
-print (t1-t0)
+print (f"time to load data: {t1-t0}")
 
 # Define states for conversation
 MENU, STOP_ASK, LOCATION_ASK = range(3)

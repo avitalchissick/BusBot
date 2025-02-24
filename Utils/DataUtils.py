@@ -88,3 +88,24 @@ def get_calendars():
         for row in reader:
             calendars.append(Calendar.Calendar(row[0], row[1], row[2],row[3],row[4],row[5], row[6], row[7],row[8],row[9]))
     return calendars
+
+# with pandas it loads slower
+# def get_stops():
+#     df = pd.read_csv('Data/stops.txt')
+#     return [Stop.Stop(x.stop_id,x.stop_code,x.stop_name,x.stop_desc,x.stop_lat,x.stop_lon,x.location_type) for x in df.itertuples()]
+
+# def get_routes():
+#     df = pd.read_csv('Data/routes.txt')
+#     return [Route.Route(x.route_id,x.agency_id,x.route_short_name,x.route_long_name,x.route_desc,x.route_type) for x in df.itertuples()]
+
+# def get_stop_times():
+#     df = pd.read_csv('Data/stop_times.txt')
+#     return [StopTime.StopTime(x.trip_id,x.arrival_time,x.departure_time,x.stop_id,x.stop_sequence) for x in df.itertuples()]
+
+# def get_trips():
+#     df = pd.read_csv('Data/trips.txt')
+#     return [Trip.Trip(x.route_id,x.service_id,x.trip_id,x.trip_headsign,x.direction_id) for x in df.itertuples()]
+
+# def get_calendars():
+#     df = pd.read_csv('Data/calendar.txt')
+#     return [Calendar.Calendar(x.service_id,x.sunday,x.monday,x.tuesday,x.wednesday,x.thursday,x.friday,x.saturday,x.start_date,x.end_date) for x in df.itertuples()]
