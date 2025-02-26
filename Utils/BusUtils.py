@@ -10,8 +10,20 @@ import Classes.BusesData as BusesData
 import telebot
 from geopy.distance import geodesic as GD
 
-# listing bus lines that run through the given stop id
 def get_stop_lines(bus_data: BusesData.BusData,stop_id,minutes_interval = 60):
+    '''
+    Compiling a list of lines that pass in the given stop
+
+    Args:
+        bus_data: BusData object
+        stop_id: stop id number
+        minutes_interval: the time interval
+    
+    Returns:
+        list of lines that will pass in the stop in the next <minutes_interval> minutes.
+        the list will be sorted by arrival time in ascending order
+
+    '''
     lines = list()
     for stop_time in bus_data.stop_times:
         if stop_time.stop_id != stop_id: continue
@@ -44,6 +56,16 @@ def get_stop_lines(bus_data: BusesData.BusData,stop_id,minutes_interval = 60):
     return lines
 
 def get_stop_lines_text(bus_data: BusesData.BusData,stop_code):
+    '''
+    Preparing text to be displayed for query about stop code
+
+    Args:
+        bus_data: BusData object
+        stop_code: bus stop code
+
+    Returns:
+        Text to be displayed for the given stop code
+    '''
     if stop_code.isnumeric():
         stop: Stop = next((x for x in bus_data.stops if x.code == stop_code),None)
         if stop == None:
@@ -60,15 +82,25 @@ def get_stop_lines_text(bus_data: BusesData.BusData,stop_code):
     else:
         return 'מספר תחנה חייב להיות מספר'
     
-# listing stations close to the given location
-def get_stops_for_location(bus_data: BusesData.BusData,location: telebot.types.Location,meters_interval):
+def get_stops_for_location(bus_data: BusesData.BusData,location: telebot.types.Location,meters_distance):
+    '''
+    Listing stations close to the given location
+
+    Args:
+        bus_data: BusData object
+        location: location point
+        meters_distance: distance to search with
+
+    Returns:
+        List of stops close to the given location
+    '''
     stops = list()
     location_value = (location.latitude,location.longitude)
     distance = 0
     for stop in bus_data.stops:
         stop_location_value = (stop.lat,stop.lon)
         distance = GD(location_value,stop_location_value).meters
-        if distance <= meters_interval:
+        if distance <= meters_distance:
             stops.append(StopDistanceDisplayLine.StopDistanceDisplayLine(stop,int(distance)))
     
     stops.sort(key=lambda x: x.distance)
@@ -76,6 +108,16 @@ def get_stops_for_location(bus_data: BusesData.BusData,location: telebot.types.L
     return stops
 
 def get_adjacent_stops_text(bus_data: BusesData.BusData, location):
+    '''
+    Preparing text to be displayed for a query on a given location
+
+    Args:
+        bus_data: BusData object
+        location: location point
+
+    Returns:
+        Text to be displayed
+    '''
     if location == None:
         return "לא סופק מיקום"
     meters_interval = 500

@@ -14,37 +14,43 @@ import pandas as pd
 data_url = "https://gtfs.mot.gov.il/gtfsfiles"
 main_data_file_name = "israel-public-transportation.zip"
 
-def server_has_new_data(main_data_file_path):
-    return (datetime.datetime.now() - datetime.datetime.fromtimestamp(os.path.getmtime(main_data_file_path))).total_seconds()/360 > 24
-# does not work ! - produces SSL error
-#    response = requests.head(f'{data_url}/{main_data_file_name}')
-#    url_last_modified = time.mktime(datetime.datetime.strptime(response.headers.get('Last-Modified')[:-4], "%a, %d %b %Y %H:%M:%S").timetuple()) 
-#    local_last_modified = datetime.datetime.fromtimestamp(os.path.getmtime(main_data_file_path))
-#    return url_last_modified > local_last_modified
+def need_to_get_data_from_server(main_data_file_path):
+    '''
+    Checks if we need to download data from server.
 
-def get_bus_bata_files_from_server():
+    Args:
+        main_data_file_path: data file path
+
+    Returns:
+        Boolean value, True when the server has new data or if 24 hours have passed since the file was downloaded
+
+    '''
+    return (datetime.datetime.now() - datetime.datetime.fromtimestamp(os.path.getmtime(main_data_file_path))).total_seconds()/360 > 24
+    # does not work ! - produces SSL error
+    #    response = requests.head(f'{data_url}/{main_data_file_name}')
+    #    url_last_modified = time.mktime(datetime.datetime.strptime(response.headers.get('Last-Modified')[:-4], "%a, %d %b %Y %H:%M:%S").timetuple()) 
+    #    local_last_modified = datetime.datetime.fromtimestamp(os.path.getmtime(main_data_file_path))
+    #    return url_last_modified > local_last_modified
+
+def get_bus_bata_files():
+    '''
+    When needed, gets the data files from the remote server
+    '''
     local_data_folder = f"{os.getcwd()}/Data"
     if not os.path.isdir(local_data_folder):
         os.mkdir(local_data_folder)
 
     main_data_file_path = f"{local_data_folder}/{main_data_file_name}"
 
-    if (not os.path.isfile(main_data_file_path)) or server_has_new_data(main_data_file_path):
+    if (not os.path.isfile(main_data_file_path)) or need_to_get_data_from_server(main_data_file_path):
         urllib.request.urlretrieve( f"{data_url}/{main_data_file_name}",main_data_file_path)
         with zipfile.ZipFile(main_data_file_path, 'r') as zip_ref:
             zip_ref.extractall(local_data_folder)
 
-def get_agencies():
-    agencies = []
-    with open('Data/agency.txt', 'r',encoding='utf-8') as f:
-        reader = csv.reader(f)
-        next(f) #skipping the header line
-        for row in reader:
-            agencies.append(Agency.Agency(row[0], row[1], row[2]))
-
-    return agencies
-
 def get_stops():
+    '''
+    Returns list of stops
+    '''
     stops = []
     with open('Data/stops.txt', 'r',encoding='utf-8') as f:
         reader = csv.reader(f)
@@ -54,6 +60,9 @@ def get_stops():
     return stops
 
 def get_routes():
+    '''
+    Returns list of routes
+    '''
     routes = []
     with open('Data/routes.txt', 'r',encoding='utf-8') as f:
         reader = csv.reader(f)
@@ -63,6 +72,10 @@ def get_routes():
     return routes
 
 def get_stop_times():
+    '''
+    Returns list of stop times
+    '''
+
     stop_times = []
     with open('Data/stop_times.txt', 'r',encoding='utf-8') as f:
         reader = csv.reader(f)
@@ -72,6 +85,9 @@ def get_stop_times():
     return stop_times
 
 def get_trips():
+    '''
+    Returns list of trips
+    '''
     trips = []
     with open('Data/trips.txt', 'r',encoding='utf-8') as f:
         reader = csv.reader(f)
@@ -81,6 +97,9 @@ def get_trips():
     return trips
 
 def get_calendars():
+    '''
+    Returns list of calendars
+    '''
     calendars = []
     with open('Data/calendar.txt', 'r',encoding='utf-8') as f:
         reader = csv.reader(f)

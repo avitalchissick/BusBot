@@ -2,7 +2,7 @@ import Utils.DataUtils as DataUtils
 
 class BusData:
     def __init__(self):
-        DataUtils.get_bus_bata_files_from_server()
+        DataUtils.get_bus_bata_files()
         self.stops = DataUtils.get_stops()
         self.stop_times = DataUtils.get_stop_times()
         self.trips = DataUtils.get_trips()
