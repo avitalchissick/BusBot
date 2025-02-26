@@ -22,4 +22,9 @@ Utils\BusUtils.py - handles getting requested information per user parameters
 Classes\* - files that represent data objects
 
 Future ideas:
+<<<<<<< HEAD
 1 - Add usage of real-time information (available via API as described in https://www.gov.il/he/pages/real_time_information_siri)
+=======
+1 - Improve bot GUI by using telegram API - done
+2 - Add usage of real-time information (available via API as described in https://www.gov.il/he/pages/real_time_information_siri)
+>>>>>>> 44c1c1c2d19f33a10fd90daafea2f42c8211c2b4
