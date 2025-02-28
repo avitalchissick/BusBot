@@ -1,5 +1,5 @@
 class StopTime:
-    def __init__(self,trip_id,arrival_time,departure_time,stop_id,stop_sequence):
+    def __init__(self, trip_id, arrival_time, departure_time, stop_id, stop_sequence):
         self.trip_id = trip_id
         self.arrival_time = arrival_time
         self.departure_time = departure_time

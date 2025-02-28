@@ -1,5 +1,8 @@
 import datetime
+from os import environ
+import json
 
+import requests
 import telebot
 from geopy.distance import geodesic as gd
 
@@ -14,7 +17,9 @@ from Classes import (
 import Classes.buses_data as buses_data
 
 
-def get_stop_lines(bus_data: buses_data.bus_data, stop_id, minutes_interval=60):
+def get_stop_lines(
+    bus_data: buses_data.bus_data, stop_id, stop_code, minutes_interval=60
+):
     """
     Compiling a list of lines that pass in the given stop
 
@@ -60,7 +65,7 @@ def get_stop_lines(bus_data: buses_data.bus_data, stop_id, minutes_interval=60):
             bus_trip: trip.Trip = next(
                 (x for x in bus_data.trips if x.trip_id == s_time.trip_id), None
             )
-            if trip is None:
+            if bus_trip is None:
                 print(f"trip {s_time.trip_id} not found")
             else:
                 bus_route: route.Route = next(
@@ -79,6 +84,14 @@ def get_stop_lines(bus_data: buses_data.bus_data, stop_id, minutes_interval=60):
                         None,
                     )
                     if bus_calendar.is_running(datetime.datetime.now()):
+                        exp_arrival_time = get_real_time_arrival_time(
+                                    int(stop_code), bus_trip.route_id)
+                        is_real_time = False
+                        arrival_time = s_time.arrival_time
+                        if exp_arrival_time != None:
+                            arrival_time = exp_arrival_time
+                            is_real_time = True
+
                         lines.append(
                             stop_route_display_line.StopRouteDisplayLine(
                                 bus_route.id,
@@ -86,11 +99,48 @@ def get_stop_lines(bus_data: buses_data.bus_data, stop_id, minutes_interval=60):
                                 bus_route.long_name,
                                 bus_trip.direction_id,
                                 s_time.arrival_time,
+                                is_real_time
                             )
                         )
 
     lines.sort(key=lambda x: x.arrival_time)
     return lines
+
+
+def get_real_time_arrival_time(stop_code, route_id):
+    """
+    Getting real time expected time of arrival for bus at stop
+
+    Args:
+        stop_id: bus stop id
+        route_id: bus route id
+
+        Returns:
+            If bus hasn't started the route yet then None is returned.
+            Else date-time value of expected real-time arrival.
+    """
+
+    mot_base_url = environ["MOT_BASE_URL"]
+
+    params = dict(MonitoringRef=stop_code, LineRef=route_id)
+
+    data = requests.get(url=mot_base_url, params=params, timeout=120)
+    output = json.loads(data.content)
+    print(params)
+    # print(output)
+
+    if (
+        output["Siri"]["ServiceDelivery"]["StopMonitoringDelivery"][0]["Status"]
+        == "true"
+    ):
+        # example - 2025-02-28T23:33:00+02:00
+        exp_arrival_time: str = output["Siri"]["ServiceDelivery"]["StopMonitoringDelivery"][0]["MonitoredStopVisit"][0]["MonitoredVehicleJourney"]["MonitoredCall"]["ExpectedArrivalTime"]
+        idx1 = exp_arrival_time.index("T") + 1
+        idx2 = exp_arrival_time.index("+")
+
+        return exp_arrival_time[idx1:idx2]
+
+    return None
 
 
 def get_stop_lines_text(bus_data: buses_data.bus_data, stop_code):
@@ -106,19 +156,21 @@ def get_stop_lines_text(bus_data: buses_data.bus_data, stop_code):
     """
     if stop_code.isnumeric():
         bus_stop: stop.Stop = next(
-            (x for x in bus_data.stops if x.code == stop_code), None
+            (x for x in bus_data.stops if x.code == int(stop_code)), None
         )
         if bus_stop is None:
-            return f"stop {stop_code} not found"
+            return f"תחנה {stop_code} לא נמצאה בנתונים"
         minutes_interval = 60
-        stop_lines: list = get_stop_lines(bus_data, bus_stop.id, minutes_interval)
+        stop_lines: list = get_stop_lines(
+            bus_data, bus_stop.id, stop_code, minutes_interval
+        )
         display_text = ""
         if len(stop_lines) > 0:
             for x in stop_lines:
                 display_text += f"\r\n{str(x)}"
         else:
             display_text = "לא נמצאו נתונים"
-        return f"{str(stop)}.\r\nקווים שעוברים ב  {minutes_interval} דקות הבאות: {display_text}"
+        return f"{str(bus_stop)}.\r\nקווים שעוברים ב  {minutes_interval} דקות הבאות: {display_text}"
     else:
         return "מספר תחנה חייב להיות מספר"
 
