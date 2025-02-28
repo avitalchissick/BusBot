@@ -1,0 +1,178 @@
+import datetime
+
+import telebot
+from geopy.distance import geodesic as gd
+
+from Classes import (
+    stop,
+    route,
+    trip,
+    calendar,
+    stop_route_display_line,
+    stop_distance_display_line,
+)
+import Classes.buses_data as buses_data
+
+
+def get_stop_lines(bus_data: buses_data.bus_data, stop_id, minutes_interval=60):
+    """
+    Compiling a list of lines that pass in the given stop
+
+    Args:
+        bus_data: BusData object
+        stop_id: stop id number
+        minutes_interval: the time interval
+
+    Returns:
+        list of lines that will pass in the stop in the next <minutes_interval> minutes.
+        the list will be sorted by arrival time in ascending order
+
+    """
+    lines = list()
+    for s_time in bus_data.stop_times:
+        if s_time.stop_id != stop_id:
+            continue
+
+        # handling time values (could be above 24 hrs, see GTFS documentation)
+        hour, minute, seconds = s_time.arrival_time.split(":")
+        if int(hour) >= 24:
+            tomorrow = datetime.datetime.now() + datetime.timedelta(days=1)
+            arrival_time = datetime.datetime(
+                tomorrow.year,
+                tomorrow.month,
+                tomorrow.day,
+                int(hour) - 24,
+                int(minute),
+                int(seconds),
+            )
+        else:
+            today = datetime.datetime.now()
+            arrival_time = datetime.datetime(
+                today.year, today.month, today.day, int(hour), int(minute), int(seconds)
+            )
+
+        # checking is arrival time is within the given time interval
+        if (
+            0
+            < (arrival_time - datetime.datetime.now()).total_seconds() / 60
+            < minutes_interval
+        ):
+            bus_trip: trip.Trip = next(
+                (x for x in bus_data.trips if x.trip_id == s_time.trip_id), None
+            )
+            if trip is None:
+                print(f"trip {s_time.trip_id} not found")
+            else:
+                bus_route: route.Route = next(
+                    (x for x in bus_data.routes if x.id == bus_trip.route_id), None
+                )
+                if route is None:
+                    print(f"route {bus_trip.route_id} not found")
+                else:
+                    # checking if the service is running in this day
+                    bus_calendar: calendar.Calendar = next(
+                        (
+                            x
+                            for x in bus_data.calendars
+                            if x.service_id == bus_trip.service_id
+                        ),
+                        None,
+                    )
+                    if bus_calendar.is_running(datetime.datetime.now()):
+                        lines.append(
+                            stop_route_display_line.StopRouteDisplayLine(
+                                bus_route.id,
+                                bus_route.short_name,
+                                bus_route.long_name,
+                                bus_trip.direction_id,
+                                s_time.arrival_time,
+                            )
+                        )
+
+    lines.sort(key=lambda x: x.arrival_time)
+    return lines
+
+
+def get_stop_lines_text(bus_data: buses_data.bus_data, stop_code):
+    """
+    Preparing text to be displayed for query about stop code
+
+    Args:
+        bus_data: BusData object
+        stop_code: bus stop code
+
+    Returns:
+        Text to be displayed for the given stop code
+    """
+    if stop_code.isnumeric():
+        bus_stop: stop.Stop = next(
+            (x for x in bus_data.stops if x.code == stop_code), None
+        )
+        if bus_stop is None:
+            return f"stop {stop_code} not found"
+        minutes_interval = 60
+        stop_lines: list = get_stop_lines(bus_data, bus_stop.id, minutes_interval)
+        display_text = ""
+        if len(stop_lines) > 0:
+            for x in stop_lines:
+                display_text += f"\r\n{str(x)}"
+        else:
+            display_text = "לא נמצאו נתונים"
+        return f"{str(stop)}.\r\nקווים שעוברים ב  {minutes_interval} דקות הבאות: {display_text}"
+    else:
+        return "מספר תחנה חייב להיות מספר"
+
+
+def get_stops_for_location(
+    bus_data: buses_data.bus_data, location: telebot.types.Location, meters_distance
+):
+    """
+    Listing stations close to the given location
+
+    Args:
+        bus_data: BusData object
+        location: location point
+        meters_distance: distance to search with
+
+    Returns:
+        List of stops close to the given location
+    """
+    stops = list()
+    location_value = (location.latitude, location.longitude)
+    for bus_stop in bus_data.stops:
+        stop_location_value = (bus_stop.lat, bus_stop.lon)
+        distance = gd(location_value, stop_location_value).meters
+        if distance <= meters_distance:
+            stops.append(
+                stop_distance_display_line.StopDistanceDisplayLine(
+                    bus_stop, int(distance)
+                )
+            )
+
+    stops.sort(key=lambda x: x.distance)
+
+    return stops
+
+
+def get_adjacent_stops_text(bus_data: buses_data.bus_data, location):
+    """
+    Preparing text to be displayed for a query on a given location
+
+    Args:
+        bus_data: BusData object
+        location: location point
+
+    Returns:
+        Text to be displayed
+    """
+    if location is None:
+        return "לא סופק מיקום"
+    meters_interval = 500
+    stops: list = get_stops_for_location(bus_data, location, meters_interval)
+    display_text = ""
+    if len(stops) > 0:
+        for x in stops:
+            display_text += f"\r\n{str(x)}"
+    else:
+        display_text = "no data was found"
+    return f"תחנות במרחק של עד {meters_interval} מטרים:{display_text}"

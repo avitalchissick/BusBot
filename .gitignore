@@ -181,3 +181,4 @@ Data/stop_times.txt
 Data/stops.txt
 Data/translations.txt
 Data/trips.txt
+.idea/**
