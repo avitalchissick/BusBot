@@ -88,7 +88,7 @@ def get_stop_lines(
                                     int(stop_code), bus_trip.route_id)
                         is_real_time = False
                         arrival_time = s_time.arrival_time
-                        if exp_arrival_time != None:
+                        if exp_arrival_time is not None:
                             arrival_time = exp_arrival_time
                             is_real_time = True
 
@@ -126,8 +126,6 @@ def get_real_time_arrival_time(stop_code, route_id):
 
     data = requests.get(url=mot_base_url, params=params, timeout=120)
     output = json.loads(data.content)
-    print(params)
-    # print(output)
 
     if (
         output["Siri"]["ServiceDelivery"]["StopMonitoringDelivery"][0]["Status"]

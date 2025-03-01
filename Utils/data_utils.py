@@ -3,7 +3,7 @@ import os
 import zipfile
 
 # import csv
-import datetime
+import datetime as dt
 
 import pandas as pd
 
@@ -25,10 +25,9 @@ def need_to_get_data_from_server(main_data_file_path):
         have passed since the file was downloaded.
 
     """
-    return (
-        datetime.datetime.now()
-        - datetime.datetime.fromtimestamp(os.path.getmtime(main_data_file_path))
-    ).total_seconds() / 360 > 24
+    file_time = dt.datetime.fromtimestamp(os.path.getmtime(main_data_file_path))
+    print(file_time)
+    return (dt.datetime.now() - file_time).total_seconds() / 360 > 24
     # does not work ! - produces SSL error
     #    response = requests.head(f'{DATA_URL}/{MAIN_DATA_FILE_NAME}')
     #    url_last_modified = time.mktime(datetime.datetime.strptime

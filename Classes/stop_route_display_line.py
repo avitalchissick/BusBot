@@ -18,8 +18,6 @@ class StopRouteDisplayLine:
 
     def __str__(self):
         if self.is_real_time:
-            return (
-                f"*b*{self.arrival_time}*b* - {self.route_short_name} - {self.route_to}"
-            )
+            return f"<b>{self.arrival_time}</b> - {self.route_short_name} - {self.route_to}"
         else:
             return f"{self.arrival_time} - {self.route_short_name} - {self.route_to}"

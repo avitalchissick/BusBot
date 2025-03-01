@@ -2,7 +2,7 @@ import time
 from os import environ
 import logging
 
-from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
+from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup, constants
 from telegram.ext import (
     ApplicationBuilder,
     CommandHandler,
@@ -72,7 +72,7 @@ async def button(update: Update, context: CallbackContext) -> int:
 async def stop_handler(update: Update, context: CallbackContext) -> int:
     stop_code = update.message.text
     display_text = bus_utils.get_stop_lines_text(bus_data, stop_code)
-    await update.message.reply_text(display_text)
+    await update.message.reply_text(display_text, parse_mode="HTML")
     return MENU
 
 
@@ -92,11 +92,9 @@ def main():
         entry_points=[CommandHandler("start", start)],
         states={
             MENU: [CallbackQueryHandler(button)],
-            STOP_ASK: [
-                MessageHandler(filters.TEXT & ~filters.COMMAND, stop_handler)],
+            STOP_ASK: [MessageHandler(filters.TEXT & ~filters.COMMAND, stop_handler)],
             LOCATION_ASK: [
-                MessageHandler(filters.LOCATION & ~filters.COMMAND, 
-                               location_handler)
+                MessageHandler(filters.LOCATION & ~filters.COMMAND, location_handler)
             ],
         },
         fallbacks=[CommandHandler("start", start)],
