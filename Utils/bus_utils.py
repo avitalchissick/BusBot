@@ -21,7 +21,7 @@ def get_stop_lines(
     bus_data: buses_data.bus_data, stop_id, stop_code, minutes_interval=60
 ):
     """
-    Compiling a list of lines that pass in the given stop
+    Compiling a list of lines that pass in the given stop in the next minutes interval
 
     Args:
         bus_data: BusData object
@@ -84,10 +84,11 @@ def get_stop_lines(
                         None,
                     )
                     if bus_calendar.is_running(datetime.datetime.now()):
-                        exp_arrival_time = get_real_time_arrival_time(
-                                    int(stop_code), bus_trip.route_id)
                         is_real_time = False
                         arrival_time = s_time.arrival_time
+
+                        exp_arrival_time = get_real_time_arrival_time(
+                                    int(stop_code), bus_trip.route_id)
                         if exp_arrival_time is not None:
                             arrival_time = exp_arrival_time
                             is_real_time = True

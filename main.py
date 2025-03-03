@@ -20,7 +20,6 @@ from Utils import bus_utils
 load_dotenv("BusBot.env")
 
 # The bot token obtained from BotFather
-# TOKEN = os.environ.get('BOT_TOKEN')
 TOKEN = environ["BOT_TOKEN"]
 
 # Initializing bus data
